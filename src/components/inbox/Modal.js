@@ -3,7 +3,11 @@ import isValidEmail from "../../utils/isValidEmail";
 import { useGetUsersQuery } from "../../features/users/userApi";
 import Error from "../ui/Error";
 import { useDispatch, useSelector } from "react-redux";
-import { conversationsApi } from "../../features/conversations/conversationsApi";
+import {
+  conversationsApi,
+  useAddConversationMutation,
+  useEditConversationMutation,
+} from "../../features/conversations/conversationsApi";
 
 export default function Modal({ open, control }) {
   const [to, setTo] = useState("");
@@ -18,6 +22,11 @@ export default function Modal({ open, control }) {
   const { data: participant } = useGetUsersQuery(to, {
     skip: !userCheck,
   });
+
+  const [addConversation, { isSuccess: isAddConversationSuccess }] =
+    useAddConversationMutation();
+  const [editConversation, { isSuccess: isEditConversationSuccess }] =
+    useEditConversationMutation();
 
   useEffect(() => {
     if (participant?.length > 0 && participant[0].email !== myEmail) {
@@ -36,6 +45,13 @@ export default function Modal({ open, control }) {
         });
     }
   }, [participant, dispatch, myEmail, to]);
+
+  useEffect(() => {
+    if (isAddConversationSuccess || isEditConversationSuccess) {
+      control();
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAddConversationSuccess, isEditConversationSuccess]);
 
   const debounceHandler = (fn, delay) => {
     let timeoutId;
@@ -58,6 +74,24 @@ export default function Modal({ open, control }) {
 
   const handleSubmit = (event) => {
     event.preventDefault();
+    if (conversation?.length > 0) {
+      editConversation({
+        id: conversation[0].id,
+        data: {
+          participants: `${myEmail}-${participant[0].email}`,
+          users: [loggedInUser, participant[0]],
+          message: message,
+          timestamp: new Date().getTime(),
+        },
+      });
+    } else if (conversation?.length === 0) {
+      addConversation({
+        participants: `${myEmail}-${participant[0].email}`,
+        users: [loggedInUser, participant[0]],
+        message: message,
+        timestamp: new Date().getTime(),
+      });
+    }
   };
 
   return (
@@ -71,7 +105,7 @@ export default function Modal({ open, control }) {
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
             Send message
           </h2>
-          <form className="mt-8 space-y-6">
+          <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
             <div className="rounded-md shadow-sm -space-y-px">
               <div>
                 <label htmlFor="to" className="sr-only">
