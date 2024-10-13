@@ -21,8 +21,8 @@ export const conversationsApi = apiSlice.injectEndpoints({
         const conversation = await queryFulfilled;
         if (conversation?.data?.id) {
           const users = arg.data.users;
-          const sender = users.filter((user) => user.email === arg.senderUser);
-          const receiver = users.filter(
+          const sender = users.find((user) => user.email === arg.senderUser);
+          const receiver = users.find(
             (user) => user.email !== arg.senderUser
           );
           dispatch(
@@ -49,8 +49,8 @@ export const conversationsApi = apiSlice.injectEndpoints({
         const conversation = await queryFulfilled;
         if (conversation?.data?.id) {
           const users = arg.data.users;
-          const sender = users.filter((user) => user.email === arg.senderUser);
-          const receiver = users.filter(
+          const sender = users.find((user) => user.email === arg.senderUser);
+          const receiver = users.find(
             (user) => user.email !== arg.senderUser
           );
           dispatch(

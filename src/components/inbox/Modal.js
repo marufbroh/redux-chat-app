@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
-import isValidEmail from "../../utils/isValidEmail";
-import { useGetUsersQuery } from "../../features/users/userApi";
-import Error from "../ui/Error";
 import { useDispatch, useSelector } from "react-redux";
 import {
   conversationsApi,
   useAddConversationMutation,
   useEditConversationMutation,
 } from "../../features/conversations/conversationsApi";
+import { useGetUserQuery } from "../../features/users/userApi";
+import isValidEmail from "../../utils/isValidEmail";
+import Error from "../ui/Error";
 
 export default function Modal({ open, control }) {
   const [to, setTo] = useState("");
@@ -15,11 +15,12 @@ export default function Modal({ open, control }) {
   const [userCheck, setUserCheck] = useState(false);
   const { user: loggedInUser } = useSelector((state) => state.auth) || {};
   const { email: myEmail } = loggedInUser || {};
+  // console.log(myEmail);
   const dispatch = useDispatch();
   const [responseError, setResponseError] = useState("");
   const [conversation, setConversation] = useState(undefined);
 
-  const { data: participant } = useGetUsersQuery(to, {
+  const { data: participant, } = useGetUserQuery(to, {
     skip: !userCheck,
   });
 
@@ -29,7 +30,7 @@ export default function Modal({ open, control }) {
     useEditConversationMutation();
 
   useEffect(() => {
-    if (participant?.length > 0 && participant[0].email !== myEmail) {
+    if (participant?.length > 0 && participant[0]?.email !== myEmail) {
       dispatch(
         conversationsApi.endpoints.getConversation.initiate({
           userEmail: myEmail,
@@ -65,8 +66,8 @@ export default function Modal({ open, control }) {
 
   const doSearch = (value) => {
     if (isValidEmail(value)) {
-      setTo(value);
       setUserCheck(true);
+      setTo(value);
     }
   };
 
@@ -79,7 +80,7 @@ export default function Modal({ open, control }) {
         id: conversation[0].id,
         senderUser: myEmail,
         data: {
-          participants: `${myEmail}-${participant[0].email}`,
+          participants: `${myEmail}-${participant[0]?.email}`,
           users: [loggedInUser, participant[0]],
           message: message,
           timestamp: new Date().getTime(),
@@ -89,7 +90,7 @@ export default function Modal({ open, control }) {
       addConversation({
         senderUser: myEmail,
         data: {
-            participants: `${myEmail}-${participant[0].email}`,
+            participants: `${myEmail}-${participant[0]?.email}`,
             users: [loggedInUser, participant[0]],
             message: message,
             timestamp: new Date().getTime(),
@@ -150,7 +151,7 @@ export default function Modal({ open, control }) {
                   conversation === undefined ||
                   message === "" ||
                   (participant?.length === 0 &&
-                    participant[0].email === myEmail)
+                    participant[0]?.email === myEmail)
                 }
               >
                 Send Message
@@ -160,9 +161,9 @@ export default function Modal({ open, control }) {
             {participant?.length === 0 && (
               <Error message="This user does not exist!" />
             )}
-            {participant?.length === 0 &&
-              participant[0].email ===
-                myEmail(
+            {participant?.length > 0 &&
+              participant[0]?.email ===
+                myEmail && (
                   <Error message="You can not send message to yourself!" />
                 )}
             {responseError && <Error message={responseError} />}
