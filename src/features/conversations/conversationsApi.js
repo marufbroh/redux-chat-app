@@ -18,25 +18,37 @@ export const conversationsApi = apiSlice.injectEndpoints({
         body: data,
       }),
       async onQueryStarted(arg, { queryFulfilled, dispatch }) {
-        const conversation = await queryFulfilled;
+
+const patchResult = dispatch(apiSlice.util.updateQueryData("getConversations", arg.senderUser, (draft) => {
+  draft.push({})
+}))
+
+        try {
+          const conversation = await queryFulfilled;
         if (conversation?.data?.id) {
           const users = arg.data.users;
           const sender = users.find((user) => user.email === arg.senderUser);
-          const receiver = users.find(
-            (user) => user.email !== arg.senderUser
-          );
+          const receiver = users.find((user) => user.email !== arg.senderUser);
           dispatch(
             messagesApi.endpoints.addMessage.initiate({
               conversationId: conversation?.data?.id,
               sender,
               receiver,
               message: arg.data.message,
-              timestamp: arg.data.timestamp
+              timestamp: arg.data.timestamp,
             })
           );
         }
+        } catch (error) {
+          patchResult.undo();
+        }
       },
     }),
+
+
+
+
+
     editConversation: builder.mutation({
       query: ({ id, senderUser, data }) => ({
         url: `/conversations/${id}`,
@@ -44,28 +56,46 @@ export const conversationsApi = apiSlice.injectEndpoints({
         body: data,
       }),
 
-
       async onQueryStarted(arg, { queryFulfilled, dispatch }) {
-        const conversation = await queryFulfilled;
-        if (conversation?.data?.id) {
-          const users = arg.data.users;
-          const sender = users.find((user) => user.email === arg.senderUser);
-          const receiver = users.find(
-            (user) => user.email !== arg.senderUser
-          );
-          dispatch(
-            messagesApi.endpoints.addMessage.initiate({
-              conversationId: conversation?.data?.id,
-              sender,
-              receiver,
-              message: arg.data.message,
-              timestamp: arg.data.timestamp
-            })
-          );
+
+
+
+        const patchResult1 = dispatch(
+          apiSlice.util.updateQueryData(
+            "getConversations",
+            arg.senderUser,
+            (draft) => {
+              // eslint-disable-next-line eqeqeq
+              const draftConversation = draft.find((c) => c.id == arg.id);
+
+              draftConversation.message = arg.data.message;
+              draftConversation.timestamp = arg.data.timestamp;
+            }
+          )
+        );
+
+        try {
+          const conversation = await queryFulfilled;
+          if (conversation?.data?.id) {
+            const users = arg.data.users;
+            const sender = users.find((user) => user.email === arg.senderUser);
+            const receiver = users.find(
+              (user) => user.email !== arg.senderUser
+            );
+            dispatch(
+              messagesApi.endpoints.addMessage.initiate({
+                conversationId: conversation?.data?.id,
+                sender,
+                receiver,
+                message: arg.data.message,
+                timestamp: arg.data.timestamp,
+              })
+            );
+          }
+        } catch (error) {
+          patchResult1.undo();
         }
       },
-
-
     }),
   }),
 });
