@@ -18,36 +18,60 @@ export const conversationsApi = apiSlice.injectEndpoints({
         body: data,
       }),
       async onQueryStarted(arg, { queryFulfilled, dispatch }) {
-
-const patchResult = dispatch(apiSlice.util.updateQueryData("getConversations", arg.senderUser, (draft) => {
-  draft.push({})
-}))
+        const patchResult = dispatch(
+          apiSlice.util.updateQueryData(
+            "getConversations",
+            arg.senderUser,
+            (draft) => {
+              draft.push(arg.data);
+            }
+          )
+        );
 
         try {
           const conversation = await queryFulfilled;
-        if (conversation?.data?.id) {
-          const users = arg.data.users;
-          const sender = users.find((user) => user.email === arg.senderUser);
-          const receiver = users.find((user) => user.email !== arg.senderUser);
-          dispatch(
-            messagesApi.endpoints.addMessage.initiate({
-              conversationId: conversation?.data?.id,
-              sender,
-              receiver,
-              message: arg.data.message,
-              timestamp: arg.data.timestamp,
-            })
-          );
-        }
+          if (conversation?.data?.id) {
+            const users = arg.data.users;
+            const sender = users.find((user) => user.email === arg.senderUser);
+            const receiver = users.find(
+              (user) => user.email !== arg.senderUser
+            );
+
+            dispatch(
+              messagesApi.endpoints.addMessage.initiate({
+                conversationId: conversation?.data?.id,
+                sender,
+                receiver,
+                message: arg.data.message,
+                timestamp: arg.data.timestamp,
+              })
+            );
+
+            // const res = await  dispatch(
+            //     messagesApi.endpoints.addMessage.initiate({
+            //       conversationId: conversation?.data?.id,
+            //       sender,
+            //       receiver,
+            //       message: arg.data.message,
+            //       timestamp: arg.data.timestamp,
+            //     })
+            //   ).unwrap();
+
+            //   dispatch(
+            //     apiSlice.util.updateQueryData(
+            //       "getMessages",
+            //       res.conversationId.toString(),
+            //       (draft) => {
+            //         draft.push(res)
+            //       }
+            //     )
+            //   );
+          }
         } catch (error) {
           patchResult.undo();
         }
       },
     }),
-
-
-
-
 
     editConversation: builder.mutation({
       query: ({ id, senderUser, data }) => ({
@@ -57,10 +81,7 @@ const patchResult = dispatch(apiSlice.util.updateQueryData("getConversations", a
       }),
 
       async onQueryStarted(arg, { queryFulfilled, dispatch }) {
-
-
-
-        const patchResult1 = dispatch(
+        const patchResult = dispatch(
           apiSlice.util.updateQueryData(
             "getConversations",
             arg.senderUser,
@@ -82,7 +103,7 @@ const patchResult = dispatch(apiSlice.util.updateQueryData("getConversations", a
             const receiver = users.find(
               (user) => user.email !== arg.senderUser
             );
-            dispatch(
+            const res = await dispatch(
               messagesApi.endpoints.addMessage.initiate({
                 conversationId: conversation?.data?.id,
                 sender,
@@ -90,10 +111,20 @@ const patchResult = dispatch(apiSlice.util.updateQueryData("getConversations", a
                 message: arg.data.message,
                 timestamp: arg.data.timestamp,
               })
+            ).unwrap();
+
+            dispatch(
+              apiSlice.util.updateQueryData(
+                "getMessages",
+                res.conversationId.toString(),
+                (draft) => {
+                  draft.push(res);
+                }
+              )
             );
           }
         } catch (error) {
-          patchResult1.undo();
+          patchResult.undo();
         }
       },
     }),

@@ -42,7 +42,7 @@ export default function ChatItems() {
               })}
               name={name}
               lastMessage={message}
-              lastTime={moment(timestamp).fromNow}
+              lastTime={moment(timestamp).fromNow()}
             />
           </Link>
         </li>
