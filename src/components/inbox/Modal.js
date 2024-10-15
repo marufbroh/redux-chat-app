@@ -50,6 +50,7 @@ export default function Modal({ open, control }) {
   useEffect(() => {
     if (isAddConversationSuccess || isEditConversationSuccess) {
       control();
+      setMessage();
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAddConversationSuccess, isEditConversationSuccess]);
@@ -73,10 +74,42 @@ export default function Modal({ open, control }) {
 
   const handleSearch = debounceHandler(doSearch, 500);
 
-  const handleSubmit = (event) => {
+  // const handleSubmit = (event) => {
+  //   event.preventDefault();
+  //   console.log({conversation});
+  //   if (conversation?.length > 0) {
+  //     editConversation({
+  //       id: conversation[0].id,
+  //       senderUser: myEmail,
+  //       data: {
+  //         participants: `${myEmail}-${participant[0]?.email}`,
+  //         users: [loggedInUser, participant[0]],
+  //         message: message,
+  //         timestamp: new Date().getTime(),
+  //       },
+  //     });
+  //   } else if (conversation?.length === 0) {
+  //     addConversation({
+  //       senderUser: myEmail,
+  //       data: {
+  //           participants: `${myEmail}-${participant[0]?.email}`,
+  //           users: [loggedInUser, participant[0]],
+  //           message: message,
+  //           timestamp: new Date().getTime(),
+  //         }
+  //     });
+  //   }
+  // };
+
+
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    if (conversation?.length > 0) {
-      editConversation({
+  
+    // console.log({ conversation });
+  
+    if (conversation && conversation.length > 0) {
+      await editConversation({
         id: conversation[0].id,
         senderUser: myEmail,
         data: {
@@ -86,18 +119,28 @@ export default function Modal({ open, control }) {
           timestamp: new Date().getTime(),
         },
       });
-    } else if (conversation?.length === 0) {
-      addConversation({
+    } else {
+      await addConversation({
         senderUser: myEmail,
         data: {
-            participants: `${myEmail}-${participant[0]?.email}`,
-            users: [loggedInUser, participant[0]],
-            message: message,
-            timestamp: new Date().getTime(),
-          }
+          participants: `${myEmail}-${participant[0]?.email}`,
+          users: [loggedInUser, participant[0]],
+          message: message,
+          timestamp: new Date().getTime(),
+        },
       });
+  
+      // Fetch conversations again to update the state
+      const newConversation = await dispatch(
+        conversationsApi.endpoints.getConversation.initiate({
+          userEmail: myEmail,
+          participantEmail: to,
+        }, {forceRefetch: true})
+      ).unwrap();
+      setConversation(newConversation);
     }
   };
+  
 
   return (
     open && (
