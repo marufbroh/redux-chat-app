@@ -5,7 +5,7 @@ import { messagesApi } from "../messages/messagesApi";
 export const conversationsApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getConversations: builder.query({
-      query: (email) =>
+      query: ({email}) =>
         `/conversations?participants_like=${email}&_sort=timestamp&_order=desc&_page=1&_limit=${process.env.REACT_APP_CONVERSATIONS_PER_PAGE}`,
       async onCacheEntryAdded(
         arg,
@@ -31,6 +31,8 @@ export const conversationsApi = apiSlice.injectEndpoints({
                 conversation.timestamp = data?.data?.timestamp;
               } else {
                 // do nothing
+                // console.log("I am here", data);
+                draft.push(data.data)
               }
             });
           });
