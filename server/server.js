@@ -15,6 +15,9 @@ router.render = (req, res) => {
   const path = req.path;
   const method = req.method;
 
+  console.log(req.path);
+  console.log(req.method);
+
   if (
     path.includes("/conversations") &&
     (method === "POST" || method === "PATCH")
@@ -24,12 +27,12 @@ router.render = (req, res) => {
     });
   }
 
-//   if (path.includes("/messages") && method === "POST") {
-//     io.emit("message", {
-//       data: res.locals.data,
-//     });
-//   }
-  res.json(res.locals.date);
+  if (path.includes("/messages") && method === "POST") {
+    io.emit("message", {
+      data: res.locals.data,
+    });
+  }
+  res.json(res.locals.data);
 };
 
 const middlewares = jsonServer.defaults();

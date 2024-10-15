@@ -5,15 +5,18 @@ import Error from "../../ui/Error";
 import ChatHead from "./ChatHead";
 import Messages from "./Messages";
 import Options from "./Options";
+import { useSelector } from "react-redux";
 
 export default function ChatBody() {
     const { id } = useParams();
+    // const {user} = useSelector(state => state.auth) || {};
+    // const {email} = user || {};
     const {
         data: messages,
         isLoading,
         isError,
         error,
-    } = useGetMessagesQuery(id);
+    } = useGetMessagesQuery({id});
 
     // decide what to render
     let content = null;
