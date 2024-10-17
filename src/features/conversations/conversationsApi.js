@@ -42,6 +42,28 @@ export const conversationsApi = apiSlice.injectEndpoints({
         }
       },
     }),
+    getMoreConversations: builder.query({
+      query: ({email, page}) =>
+        `/conversations?participants_like=${email}&_sort=timestamp&_order=desc&_page=${page}&_limit=${process.env.REACT_APP_CONVERSATIONS_PER_PAGE}`,
+
+      async onQueryStarted({email, page}, { queryFulfilled, dispatch }) {
+
+        const conversations = await queryFulfilled;
+        if (conversations?.length > 0) {
+
+          dispatch(
+            apiSlice.util.updateQueryData(
+              "getConversations",
+              email,
+              (draft) => {
+                return [...draft, ...conversations]
+              }
+            )
+          );
+        }
+      },
+    }),
+
     // getConversation: builder.query({
     //   query: ({ userEmail, participantEmail }) =>
     //     `/conversations?participants_like=${userEmail}-${participantEmail}&&participants_like=${participantEmail}-${userEmail}`,
@@ -86,7 +108,7 @@ export const conversationsApi = apiSlice.injectEndpoints({
           dispatch(
             apiSlice.util.updateQueryData(
               "getConversations",
-              arg.senderUser,
+              {email: arg.senderUser},
               (draft) => {
                 draft.push({ id: res.conversationId, ...arg.data });
               }
@@ -127,7 +149,7 @@ export const conversationsApi = apiSlice.injectEndpoints({
         const patchResult = dispatch(
           apiSlice.util.updateQueryData(
             "getConversations",
-            arg.senderUser,
+            {email: arg.senderUser},
             (draft) => {
               // eslint-disable-next-line eqeqeq
               const draftConversation = draft.find((c) => c.id == arg.id);
@@ -159,7 +181,7 @@ export const conversationsApi = apiSlice.injectEndpoints({
             dispatch(
               apiSlice.util.updateQueryData(
                 "getMessages",
-                res.conversationId.toString(),
+                {id: res.conversationId.toString()},
                 (draft) => {
                   draft.push(res);
                 }

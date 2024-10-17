@@ -21,12 +21,31 @@
   ],
   "conversations": [
     {
-      "participants": "oli@gmail.com-rahat@gmail.com",
+      "participants": "maruf@gmail.com-oli@gmail.com",
       "users": [
         {
+          "email": "maruf@gmail.com",
+          "name": "Maruf",
+          "id": 1
+        },
+        {
           "email": "oli@gmail.com",
+          "password": "$2a$10$gh3nuP/Dwhj3ir8WMCmDE.G811qVglCqjtWjSzoHCo0p9H9Wh.VXS",
           "name": "Oli",
           "id": 3
+        }
+      ],
+      "message": "1",
+      "timestamp": 1728991903815,
+      "id": 1
+    },
+    {
+      "participants": "maruf@gmail.com-rahat@gmail.com",
+      "users": [
+        {
+          "email": "maruf@gmail.com",
+          "name": "Maruf",
+          "id": 1
         },
         {
           "email": "rahat@gmail.com",
@@ -35,27 +54,8 @@
           "id": 2
         }
       ],
-      "message": "How're you doing?",
-      "timestamp": 1728975795640,
-      "id": 1
-    },
-    {
-      "participants": "oli@gmail.com-maruf@gmail.com",
-      "users": [
-        {
-          "email": "oli@gmail.com",
-          "name": "Oli",
-          "id": 3
-        },
-        {
-          "email": "maruf@gmail.com",
-          "password": "$2a$10$jB0f4exahJiFmMqdyu53IeXu7B0eddwHjz4tzLeufNeYmX.btVmXC",
-          "name": "Maruf",
-          "id": 1
-        }
-      ],
-      "message": "kemon asso?",
-      "timestamp": 1728976341198,
+      "message": "hey rahat",
+      "timestamp": 1728991919073,
       "id": 2
     }
   ],
@@ -63,26 +63,43 @@
     {
       "conversationId": 1,
       "sender": {
+        "email": "maruf@gmail.com",
+        "name": "Maruf",
+        "id": 1
+      },
+      "receiver": {
         "email": "oli@gmail.com",
+        "password": "$2a$10$gh3nuP/Dwhj3ir8WMCmDE.G811qVglCqjtWjSzoHCo0p9H9Wh.VXS",
         "name": "Oli",
         "id": 3
       },
-      "receiver": {
-        "email": "rahat@gmail.com",
-        "password": "$2a$10$e3mZYGIsgwRz.5DEolVQse4.dg/mnNWXvusVOedzPnW3xlnS9iFz6",
-        "name": "Rahat",
-        "id": 2
-      },
-      "message": "Hello, Rahat",
-      "timestamp": 1728975764790,
+      "message": "Hey oli",
+      "timestamp": 1728991846255,
       "id": 1
     },
     {
       "conversationId": 1,
       "sender": {
+        "email": "maruf@gmail.com",
+        "name": "Maruf",
+        "id": 1
+      },
+      "receiver": {
         "email": "oli@gmail.com",
+        "password": "$2a$10$gh3nuP/Dwhj3ir8WMCmDE.G811qVglCqjtWjSzoHCo0p9H9Wh.VXS",
         "name": "Oli",
         "id": 3
+      },
+      "message": "1",
+      "timestamp": 1728991903815,
+      "id": 2
+    },
+    {
+      "conversationId": 2,
+      "sender": {
+        "email": "maruf@gmail.com",
+        "name": "Maruf",
+        "id": 1
       },
       "receiver": {
         "email": "rahat@gmail.com",
@@ -90,43 +107,9 @@
         "name": "Rahat",
         "id": 2
       },
-      "message": "How're you doing?",
-      "timestamp": 1728975795640,
-      "id": 2
-    },
-    {
-      "conversationId": 2,
-      "sender": {
-        "email": "oli@gmail.com",
-        "name": "Oli",
-        "id": 3
-      },
-      "receiver": {
-        "email": "maruf@gmail.com",
-        "password": "$2a$10$jB0f4exahJiFmMqdyu53IeXu7B0eddwHjz4tzLeufNeYmX.btVmXC",
-        "name": "Maruf",
-        "id": 1
-      },
-      "message": "Hey maruf",
-      "timestamp": 1728976289190,
+      "message": "hey rahat",
+      "timestamp": 1728991919073,
       "id": 3
-    },
-    {
-      "conversationId": 2,
-      "sender": {
-        "email": "oli@gmail.com",
-        "name": "Oli",
-        "id": 3
-      },
-      "receiver": {
-        "email": "maruf@gmail.com",
-        "password": "$2a$10$jB0f4exahJiFmMqdyu53IeXu7B0eddwHjz4tzLeufNeYmX.btVmXC",
-        "name": "Maruf",
-        "id": 1
-      },
-      "message": "kemon asso?",
-      "timestamp": 1728976341198,
-      "id": 4
     }
   ]
 }
