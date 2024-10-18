@@ -7,6 +7,13 @@ export const conversationsApi = apiSlice.injectEndpoints({
     getConversations: builder.query({
       query: ({email}) =>
         `/conversations?participants_like=${email}&_sort=timestamp&_order=desc&_page=1&_limit=${process.env.REACT_APP_CONVERSATIONS_PER_PAGE}`,
+      transformResponse(apiResponse, meta) {
+        const totalCount = meta.response.headers.get("X-Total-Count");
+        return {
+          data: apiResponse,
+          totalCount
+        }
+      },
       async onCacheEntryAdded(
         arg,
         { updateCachedData, cacheDataLoaded, cacheEntryRemoved }
@@ -49,14 +56,17 @@ export const conversationsApi = apiSlice.injectEndpoints({
       async onQueryStarted({email, page}, { queryFulfilled, dispatch }) {
 
         const conversations = await queryFulfilled;
-        if (conversations?.length > 0) {
+        if (conversations?.data?.length > 0) {
 
           dispatch(
             apiSlice.util.updateQueryData(
               "getConversations",
               email,
               (draft) => {
-                return [...draft, ...conversations]
+                return {
+                  data: [...draft.data, ...conversations.data],
+                  totalCount: Number(draft.totalCount)
+                }
               }
             )
           );
@@ -110,7 +120,7 @@ export const conversationsApi = apiSlice.injectEndpoints({
               "getConversations",
               {email: arg.senderUser},
               (draft) => {
-                draft.push({ id: res.conversationId, ...arg.data });
+                draft.data.push({ id: res.conversationId, ...arg.data });
               }
             )
           );
@@ -152,7 +162,7 @@ export const conversationsApi = apiSlice.injectEndpoints({
             {email: arg.senderUser},
             (draft) => {
               // eslint-disable-next-line eqeqeq
-              const draftConversation = draft.find((c) => c.id == arg.id);
+              const draftConversation = draft.data.find((c) => c.id == arg.id);
 
               draftConversation.message = arg.data.message;
               draftConversation.timestamp = arg.data.timestamp;
